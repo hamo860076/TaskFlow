@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TaskFlow — Streamlined Focus</title>
+  <title>TaskFlow — Smart To-Do & Productivity</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -13,65 +13,133 @@
   </header>
 
   <main class="container">
+    <!-- Pomodoro Timer -->
+    <div class="pomodoro-card">
+      <h3 style="color: #f59e0b; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px;">🍅 Pomodoro Focus Timer</h3>
+      <div class="timer-display" id="timer">25:00</div>
+      <div>
+        <button class="timer-btn" onclick="startTimer()">Start</button>
+        <button class="timer-btn" onclick="pauseTimer()">Pause</button>
+        <button class="timer-btn reset" onclick="resetTimer()">Reset</button>
+      </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-section">
+      <div class="progress-labels">
+        <span>Completion Progress</span>
+        <span id="progressText">1 of 2 tasks completed (50%)</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill" style="width: 50%;"></div>
+      </div>
+    </div>
+
+    <!-- Task List -->
     <div class="task-card">
       <form class="task-form" onsubmit="addTask(event)">
         <input type="text" id="taskInput" class="task-input" placeholder="What task needs to be completed?" required>
         <button type="submit" class="btn-add">+ Add Task</button>
       </form>
-
       <ul class="task-list" id="taskList">
         <li class="task-item done">
-          <div style="display: flex; align-items: center; gap: 14px;">
-            <input type="checkbox" class="task-check" checked onchange="toggleTask(this)">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <input type="checkbox" class="task-check" checked onchange="updateProgress()">
             <span>Review quarterly project roadmap</span>
           </div>
-          <button class="task-delete" onclick="deleteTask(this)">Delete</button>
+          <button class="task-delete" onclick="deleteTask(this)">✕</button>
         </li>
         <li class="task-item">
-          <div style="display: flex; align-items: center; gap: 14px;">
-            <input type="checkbox" class="task-check" onchange="toggleTask(this)">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <input type="checkbox" class="task-check" onchange="updateProgress()">
             <span>Organize client deliverables and invoices</span>
           </div>
-          <button class="task-delete" onclick="deleteTask(this)">Delete</button>
+          <button class="task-delete" onclick="deleteTask(this)">✕</button>
         </li>
       </ul>
     </div>
   </main>
 
+  <footer>
+    <p>TaskFlow — Built to streamline daily workflows and boost productivity.</p>
+  </footer>
+
   <script>
+    // Pomodoro Timer
+    let timeLeft = 25 * 60;
+    let timerId = null;
+
+    function updateTimerDisplay() {
+      const mins = Math.floor(timeLeft / 60);
+      const secs = timeLeft % 60;
+      document.getElementById('timer').innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function startTimer() {
+      if (timerId !== null) return;
+      timerId = setInterval(() => {
+        if (timeLeft > 0) {
+          timeLeft--;
+          updateTimerDisplay();
+        } else {
+          clearInterval(timerId);
+          timerId = null;
+          alert('Pomodoro completed! Time for a short break.');
+        }
+      }, 1000);
+    }
+
+    function pauseTimer() {
+      clearInterval(timerId);
+      timerId = null;
+    }
+
+    function resetTimer() {
+      pauseTimer();
+      timeLeft = 25 * 60;
+      updateTimerDisplay();
+    }
+
+    // Task & Progress logic
+    function updateProgress() {
+      const items = document.querySelectorAll('#taskList .task-item');
+      let done = 0;
+      items.forEach(item => {
+        const check = item.querySelector('.task-check');
+        if (check.checked) {
+          item.classList.add('done');
+          done++;
+        } else {
+          item.classList.remove('done');
+        }
+      });
+      const total = items.length;
+      const pct = total === 0 ? 0 : Math.round((done / total) * 100);
+      document.getElementById('progressFill').style.width = pct + '%';
+      document.getElementById('progressText').innerText = `${done} of ${total} tasks completed (${pct}%)`;
+    }
+
     function addTask(e) {
       e.preventDefault();
-      const input = document.getElementById('taskInput');
-      const val = input.value.trim();
-      if (!val) return;
-
+      const text = document.getElementById('taskInput').value;
       const li = document.createElement('li');
       li.className = 'task-item';
       li.innerHTML = `
-        <div style="display: flex; align-items: center; gap: 14px;">
-          <input type="checkbox" class="task-check" onchange="toggleTask(this)">
-          <span>${val.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</span>
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <input type="checkbox" class="task-check" onchange="updateProgress()">
+          <span>${text}</span>
         </div>
-        <button class="task-delete" onclick="deleteTask(this)">Delete</button>
+        <button class="task-delete" onclick="deleteTask(this)">✕</button>
       `;
-
       document.getElementById('taskList').appendChild(li);
-      input.value = '';
-    }
-
-    function toggleTask(checkbox) {
-      const item = checkbox.closest('.task-item');
-      if (checkbox.checked) {
-        item.classList.add('done');
-      } else {
-        item.classList.remove('done');
-      }
+      document.getElementById('taskInput').value = '';
+      updateProgress();
     }
 
     function deleteTask(btn) {
       btn.closest('.task-item').remove();
+      updateProgress();
     }
   </script>
 </body>
 </html>
-
