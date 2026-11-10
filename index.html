@@ -3,32 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TaskFlow — To-Do List</title>
+  <title>TaskFlow — Streamlined Focus</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header>
-    <h1>TaskFlow To-Do List</h1>
+    <div class="brand-title">✓ TaskFlow</div>
+    <div style="font-size: 0.95rem; color: #94a3b8;">Daily Focus Hub</div>
   </header>
 
   <main class="container">
     <div class="task-card">
       <form class="task-form" onsubmit="addTask(event)">
-        <input type="text" id="taskInput" class="task-input" placeholder="Add a new task..." required>
-        <button type="submit" class="btn-add">Add Task</button>
+        <input type="text" id="taskInput" class="task-input" placeholder="What task needs to be completed?" required>
+        <button type="submit" class="btn-add">+ Add Task</button>
       </form>
 
       <ul class="task-list" id="taskList">
         <li class="task-item done">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <input type="checkbox" checked onchange="toggleTask(this)">
+          <div style="display: flex; align-items: center; gap: 14px;">
+            <input type="checkbox" class="task-check" checked onchange="toggleTask(this)">
             <span>Review quarterly project roadmap</span>
           </div>
           <button class="task-delete" onclick="deleteTask(this)">Delete</button>
         </li>
         <li class="task-item">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <input type="checkbox" onchange="toggleTask(this)">
+          <div style="display: flex; align-items: center; gap: 14px;">
+            <input type="checkbox" class="task-check" onchange="toggleTask(this)">
             <span>Organize client deliverables and invoices</span>
           </div>
           <button class="task-delete" onclick="deleteTask(this)">Delete</button>
@@ -47,8 +48,8 @@
       const li = document.createElement('li');
       li.className = 'task-item';
       li.innerHTML = `
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <input type="checkbox" onchange="toggleTask(this)">
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <input type="checkbox" class="task-check" onchange="toggleTask(this)">
           <span>${val.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</span>
         </div>
         <button class="task-delete" onclick="deleteTask(this)">Delete</button>
@@ -73,3 +74,4 @@
   </script>
 </body>
 </html>
+
